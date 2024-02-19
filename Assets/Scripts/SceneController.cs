@@ -4,13 +4,15 @@ using UnityEngine;
 
 public class SceneController : MonoBehaviour
 {
-    // Start is called before the first frame update
+
+    public int currentCharacter = 1; //Which character the player currently controls
+
     void Start()
     {
         
     }
 
-    // Update is called once per frame
+
     void Update()
     {
         
