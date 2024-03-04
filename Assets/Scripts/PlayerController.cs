@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour
 {
     public Transform destin; //Next destination for the character to move to
     public Tilemap tilemap;
+    [SerializeField] private SceneController scene;
 
     public Vector3 nextDestin;
     public Vector3Int gridPosition;
@@ -64,8 +65,19 @@ public class PlayerController : MonoBehaviour
     //Used in movement to see what is on the next tile
     void checkObstacle()
     {
-        Debug.Log(tilemap.GetTile(nextGridPosition));
-        destin.position = nextGridPosition;
+        Debug.Log("Checking obstacle");
+        if (scene.checkPlayerStep(transform.position, nextDestin))
+        {
+            Debug.Log("Check found no obstacle");
+            destin.position = nextGridPosition;
+        }
+        else
+        {
+            nextDestin = destin.position;
+            gridPosition = new Vector3Int((int)transform.position.x, (int)transform.position.y, (int)transform.position.z);
+            nextGridPosition = gridPosition;
+        }
+        //destin.position = nextGridPosition;
         //if (tilemap.GetTile(nextDestin) == )
     }
 }
