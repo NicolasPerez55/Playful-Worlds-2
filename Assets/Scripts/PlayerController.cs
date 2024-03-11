@@ -5,13 +5,15 @@ using UnityEngine.Tilemaps;
 
 public class PlayerController : MonoBehaviour
 {
+    public bool isPlayer;
+
     public Transform destin; //Next destination for the character to move to
-    public Tilemap tilemap;
+    //public Tilemap tilemap;
     [SerializeField] private SceneController scene;
 
-    public Vector3 nextDestin;
-    public Vector3Int gridPosition;
-    public Vector3Int nextGridPosition;
+    public Vector2 nextDestin;
+    public Vector2Int gridPosition;
+    public Vector2Int nextGridPosition;
 
     public float speed = 5f;
     public float speedModifier = 1.1f;
@@ -23,61 +25,89 @@ public class PlayerController : MonoBehaviour
     {
         destin.parent = null;
         nextDestin = destin.position;
-        gridPosition = new Vector3Int((int)transform.position.x, (int)transform.position.y, (int)transform.position.z);
+        gridPosition = new Vector2Int((int)transform.position.x, (int)transform.position.y);
         nextGridPosition = gridPosition;
     }
 
     // Update is called once per frame
     void Update()
     {
-        transform.position = Vector3.MoveTowards(transform.position, destin.position, speed * Time.deltaTime);
+        transform.position = Vector2.MoveTowards(transform.position, destin.position, speed * Time.deltaTime);
 
-        if (Vector3.Distance(transform.position, destin.position) <= 0.1f)
+        if (Vector2.Distance(transform.position, destin.position) <= 0.1f)
         {
-            if (Input.GetAxisRaw("Horizontal") == 1)
+            if (isPlayer && scene.canMove)
             {
-                nextDestin += new Vector3(1f, 0, 0);
-                nextGridPosition += new Vector3Int(1, 0, 0);
-                checkObstacle();
+                if (Input.GetAxisRaw("Horizontal") == 1) //CHANGE THIS TO JUST "GET KEY DOWN"
+                {
+                    moveCharacter("right");
+                }
+                else if (Input.GetAxisRaw("Horizontal") == -1f)
+                {
+                    moveCharacter("left");
+                }
+                else if (Input.GetAxisRaw("Vertical") == 1)
+                {
+                    moveCharacter("up");
+                }
+                else if (Input.GetAxisRaw("Vertical") == -1f)
+                {
+                    moveCharacter("down");
+                }
             }
-            else if (Input.GetAxisRaw("Horizontal") == -1f)
-            {
-                nextDestin += new Vector3(-1f, 0, 0);
-                nextGridPosition += new Vector3Int(-1, 0, 0);
-                checkObstacle();
-            }
-            else if (Input.GetAxisRaw("Vertical") == 1)
-            {
-                nextDestin += new Vector3(0, 1f, 0);
-                nextGridPosition += new Vector3Int(0, 1, 0);
-                checkObstacle();
-            }
-            else if (Input.GetAxisRaw("Vertical") == -1f)
-            {
-                nextDestin += new Vector3(0, -1f, 0);
-                nextGridPosition += new Vector3Int(0, -1, 0);
-                checkObstacle();
-            }
+        }
+    }
 
+    public void moveCharacter(string direction)
+    {
+        switch (direction)
+        {
+            case "left":
+                nextDestin += new Vector2(-1f, 0);
+                nextGridPosition += new Vector2Int(-1, 0);
+                checkObstacle("left");
+                break;
+            case "right":
+                nextDestin += new Vector2(1f, 0);
+                nextGridPosition += new Vector2Int(1, 0);
+                checkObstacle("right");
+                break;
+            case "up":
+                nextDestin += new Vector2(0, 1f);
+                nextGridPosition += new Vector2Int(0, 1);
+                checkObstacle("up");
+                break;
+            case "down":
+                nextDestin += new Vector2(0, -1f);
+                nextGridPosition += new Vector2Int(0, -1);
+                checkObstacle("down");
+                break;
+            default:
+                break;
         }
     }
 
     //Used in movement to see what is on the next tile
-    void checkObstacle()
+    void checkObstacle(string direction)
     {
         Debug.Log("Checking obstacle");
-        if (scene.checkPlayerStep(transform.position, nextDestin))
+        if (scene.checkPlayerStep(transform.position, nextDestin, direction))
         {
             Debug.Log("Check found no obstacle");
-            destin.position = nextGridPosition;
+            destin.position = new Vector3(nextGridPosition.x, nextGridPosition.y, destin.position.z);
         }
         else
         {
             nextDestin = destin.position;
-            gridPosition = new Vector3Int((int)transform.position.x, (int)transform.position.y, (int)transform.position.z);
+            gridPosition = new Vector2Int((int)transform.position.x, (int)transform.position.y);
             nextGridPosition = gridPosition;
         }
         //destin.position = nextGridPosition;
         //if (tilemap.GetTile(nextDestin) == )
+    }
+
+    Vector2 posTo2dPos(Vector3 position)
+    {
+        return new Vector2(position.x, position.y);
     }
 }
