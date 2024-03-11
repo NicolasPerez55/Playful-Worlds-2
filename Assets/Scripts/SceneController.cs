@@ -69,9 +69,14 @@ public class SceneController : MonoBehaviour
             {
                 cloneOneSteps[currentLifespan] = direction;
             }
-            else
+            else if (currentCharacter == 2)
             {
+                moveClone(cloneOne, cloneOneSteps[currentLifespan]);
                 cloneTwoSteps[currentLifespan] = direction;
+            }
+            else //final character
+            {
+
             }
             currentLifespan += 1;
             if (currentLifespan >= lifespanLimit) changeCharacters();
@@ -95,15 +100,21 @@ public class SceneController : MonoBehaviour
             if (currentCharacter == 1)
             {
                 cloneOne.gameObject.SetActive(true);
-                cloneOne.transform.position = new Vector3(cloneOneStartPos.x, cloneOneStartPos.y,1);
+                cloneOne.transform.position = new Vector3(cloneOneStartPos.x, cloneOneStartPos.y, 2);
             }
             else if (currentCharacter == 2)
             {
                 cloneTwo.gameObject.SetActive(true);
-                cloneTwo.transform.position = new Vector3(cloneTwoStartPos.x, cloneTwoStartPos.y, 1);
+                cloneTwo.transform.position = new Vector3(cloneTwoStartPos.x, cloneTwoStartPos.y, 2);
             }
             currentLifespan = 0;
+            currentCharacter += 1;
         }
+    }
+
+    void moveClone(PlayerController clone, string direction)
+    {
+        clone.moveCharacter(direction);
     }
 
     void levelOver()
